@@ -1,0 +1,19 @@
+@use "./styles/button.scss";
+
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+}
+
+html, body, #root{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(24, 24, 24);
+    color: rgb(241, 233, 233);
+    font-family: 'Poppins', sans-serif;
+}
+
+.highlight{
+    color: rgb(255, 0, 106)
+}
