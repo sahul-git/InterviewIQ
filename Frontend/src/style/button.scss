@@ -1,15 +1,16 @@
 .button{
-    border:none;
+
+    border: none;
     outline: none;
     padding-inline: 1.5rem;
     padding-block: 0.75rem;
     border-radius: 1rem;
     cursor: pointer;
 
-    transform: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
 
     &.primary-button{
-        background-color: rgb(223, 2, 79);
+        background-color: #e1034d;
         color: white;
     }
 

@@ -5,26 +5,26 @@ const tokenBlacklistModel = require("../models/blacklist.model")
 
 /**
  * @name registerUserController
- * @description Register a new user, expects username, email and password intthe request
+ * @description register a new user, expects username, email and password in the request body
  * @access Public
  */
+async function registerUserController(req, res) {
 
-async function registerUserController(req, res){
-    const {username, email, password} = req.body
+    const { username, email, password } = req.body
 
-    if(!username || !email || !password){
+    if (!username || !email || !password) {
         return res.status(400).json({
             message: "Please provide username, email and password"
         })
     }
 
     const isUserAlreadyExists = await userModel.findOne({
-        $or:[{username}, {email}]
+        $or: [ { username }, { email } ]
     })
 
-    if(isUserAlreadyExists){
+    if (isUserAlreadyExists) {
         return res.status(400).json({
-            message: "User with the same username or email already exists"
+            message: "Account already exists with this email address or username"
         })
     }
 
@@ -36,13 +36,14 @@ async function registerUserController(req, res){
         password: hash
     })
 
-    const token = jwt.sign({
-        id: user._id, username: user.username},
+    const token = jwt.sign(
+        { id: user._id, username: user.username },
         process.env.JWT_SECRET,
-        {expiresIn: "1d"}
+        { expiresIn: "1d" }
     )
 
     res.cookie("token", token)
+
 
     res.status(201).json({
         message: "User registered successfully",
@@ -52,20 +53,22 @@ async function registerUserController(req, res){
             email: user.email
         }
     })
+
 }
+
 
 /**
  * @name loginUserController
- * @description login a new user, expects username, email and password intthe request
+ * @description login a user, expects email and password in the request body
  * @access Public
  */
+async function loginUserController(req, res) {
 
-async function loginUserController(req, res){
-    const {email, password} = req.body
+    const { email, password } = req.body
 
     const user = await userModel.findOne({ email })
 
-    if(!user){
+    if (!user) {
         return res.status(400).json({
             message: "Invalid email or password"
         })
@@ -73,21 +76,21 @@ async function loginUserController(req, res){
 
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
-    if(!isPasswordValid){
+    if (!isPasswordValid) {
         return res.status(400).json({
             message: "Invalid email or password"
         })
     }
 
     const token = jwt.sign(
-        {id: user._id, username: user.username},
+        { id: user._id, username: user.username },
         process.env.JWT_SECRET,
-        {expiresIn: "1d"}
+        { expiresIn: "1d" }
     )
 
     res.cookie("token", token)
     res.status(200).json({
-        message: "User logged in successfully",
+        message: "User loggedIn successfully.",
         user: {
             id: user._id,
             username: user.username,
@@ -96,19 +99,21 @@ async function loginUserController(req, res){
     })
 }
 
+
 /**
  * @name logoutUserController
  * @description clear token from user cookie and add the token in blacklist
  * @access public
  */
-
-async function logoutUserController(req, res){
+async function logoutUserController(req, res) {
     const token = req.cookies.token
-    
-    if(token){
-        await tokenBlacklistModel.create({token})
+
+    if (token) {
+        await tokenBlacklistModel.create({ token })
     }
+
     res.clearCookie("token")
+
     res.status(200).json({
         message: "User logged out successfully"
     })
@@ -116,12 +121,14 @@ async function logoutUserController(req, res){
 
 /**
  * @name getMeController
- * @description Get the current logged-in user's information
- * @access Private
+ * @description get the current logged in user details.
+ * @access private
  */
+async function getMeController(req, res) {
 
-async function getMeController(req, res){
     const user = await userModel.findById(req.user.id)
+
+
 
     res.status(200).json({
         message: "User details fetched successfully",
@@ -131,13 +138,14 @@ async function getMeController(req, res){
             email: user.email
         }
     })
+
 }
 
 
-module.exports ={
+
+module.exports = {
     registerUserController,
     loginUserController,
     logoutUserController,
     getMeController
 }
-
